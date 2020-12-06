@@ -69,7 +69,7 @@ const useTaskList = () => {
     setTasks(updatedTasks);
   };
 
-  const handleTaskPrioritisation: HandleTaskPrioritisation = (updatedTask) => (event) => {
+  const handleTaskPrioritisation: HandleTaskPrioritisation = (taskToPrioritise) => (event) => {
     const {
       target: { value },
     } = event;
@@ -77,7 +77,7 @@ const useTaskList = () => {
     const priority: Priority = value;
 
     const updatedTasks = tasks.map((task) => {
-      if (task.description === updatedTask.description) {
+      if (task.description === taskToPrioritise.description) {
         return { ...task, priority };
       }
       return task;
@@ -86,13 +86,13 @@ const useTaskList = () => {
     setTasks(updatedTasks);
   };
 
-  const handleSortDirectionToggle: HandleSortDirectionToggle = (direction) => () => {
+  const handleSortDirectionToggle: HandleSortDirectionToggle = (currentDirection) => () => {
     const toggleMap: { [key: string]: SortDirection } = {
       ascending: 'descending',
       descending: 'ascending',
     };
 
-    setSortDirection(toggleMap[direction]);
+    setSortDirection(toggleMap[currentDirection]);
 
     const sortedTasks = sortByKey(tasks, selectedSortKey, sortDirection);
 

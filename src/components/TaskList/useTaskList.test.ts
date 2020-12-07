@@ -17,8 +17,8 @@ describe('useTaskList', () => {
 
     expect(result.current.tasks).toEqual([]);
     expect(result.current.newTask).toEqual('');
-    expect(result.current.sortKeys).toEqual(['', 'description', 'priority']);
-    expect(result.current.selectedSortKey).toEqual('');
+    expect(result.current.sortKeys).toEqual(['Sort by...', 'description', 'priority']);
+    expect(result.current.selectedSortKey).toEqual('Sort by...');
     expect(result.current.sortDirection).toEqual('ascending');
     expect(result.current.getCompletedTasks()).toEqual([]);
   });
@@ -70,7 +70,7 @@ describe('useTaskList', () => {
     expect(result.current.newTask).toEqual('');
 
     // try to add an empty task
-    const buttonEvent = { preventDefault() {} } as React.MouseEvent<HTMLButtonElement, MouseEvent>;
+    const buttonEvent = { preventDefault() {} } as React.FormEvent<HTMLFormElement>;
     act(() => result.current.handleTaskAddition(buttonEvent));
     // expect no change
     expect(result.current.tasks).toEqual([
@@ -317,7 +317,7 @@ describe('useTaskList', () => {
     expect(result.current.sortDirection).toEqual(currentDirection);
 
     // expect default (empty) sort key
-    expect(result.current.selectedSortKey).toEqual('');
+    expect(result.current.selectedSortKey).toEqual('Sort by...');
 
     // set the sort key
     const changeEvent = { target: { value: sortKey } };
@@ -365,7 +365,7 @@ describe('useTaskList', () => {
     addNewTask(result, 'c');
 
     // set the sort key
-    expect(result.current.selectedSortKey).toEqual('');
+    expect(result.current.selectedSortKey).toEqual('Sort by...');
     const sortKeyChangeEvent = { target: { value: sortKey } };
     act(() => result.current.handleTaskSort(sortKeyChangeEvent));
     expect(result.current.selectedSortKey).toEqual(sortKey);
@@ -401,11 +401,11 @@ describe('useTaskList', () => {
     addNewTask(result, 'c');
 
     // set the sort key
-    expect(result.current.selectedSortKey).toEqual('');
+    expect(result.current.selectedSortKey).toEqual('Sort by...');
     const sortKeyChangeEvent = { target: { value: sortKey } };
     act(() => result.current.handleTaskSort(sortKeyChangeEvent));
     // expect no change to selected sort key
-    expect(result.current.selectedSortKey).toEqual('');
+    expect(result.current.selectedSortKey).toEqual('Sort by...');
 
     // expect unaltered order
     expect(result.current.tasks).toEqual([

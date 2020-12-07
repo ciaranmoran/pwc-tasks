@@ -1,14 +1,16 @@
 import { useState } from 'react';
 import { sortByKey } from 'utils';
 
+const sortKeyPlaceholder = 'Sort by...';
+
 const useTaskList = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTask, setNewTask] = useState<Task['description']>('');
-  const [selectedSortKey, setSelectedSortKey] = useState<SortKey>('');
+  const [selectedSortKey, setSelectedSortKey] = useState<SortKey>(sortKeyPlaceholder);
   const [sortDirection, setSortDirection] = useState<SortDirection>('ascending');
 
   // define a list of keys we'll allow the user to sort on
-  const sortKeys: SortKey[] = ['', 'description', 'priority'];
+  const sortKeys: SortKey[] = [sortKeyPlaceholder, 'description', 'priority'];
 
   // the task description is set here by the user on input,
   // all other attributes are programatically assigned or defaulted when Add is clicked
@@ -21,7 +23,7 @@ const useTaskList = () => {
   };
 
   const handleTaskAddition: HandleTaskAddition = (event) => {
-    // prevent form submission while retaining the ability to add on Return
+    // prevent form submission whilst retaining the ability to add on Return
     event.preventDefault();
 
     if (!newTask) {
@@ -83,7 +85,9 @@ const useTaskList = () => {
       return task;
     });
 
-    setTasks(updatedTasks);
+    const sortedTasks = sortByKey(updatedTasks, selectedSortKey, sortDirection);
+
+    setTasks(sortedTasks);
   };
 
   const handleSortDirectionToggle: HandleSortDirectionToggle = (currentDirection) => () => {
@@ -92,9 +96,11 @@ const useTaskList = () => {
       descending: 'ascending',
     };
 
-    setSortDirection(toggleMap[currentDirection]);
+    const newSortDirection = toggleMap[currentDirection];
 
-    const sortedTasks = sortByKey(tasks, selectedSortKey, sortDirection);
+    setSortDirection(newSortDirection);
+
+    const sortedTasks = sortByKey(tasks, selectedSortKey, newSortDirection);
 
     setTasks(sortedTasks);
   };
@@ -106,7 +112,11 @@ const useTaskList = () => {
 
     const sortKey: SortKey = value;
 
+    // guards
     if (!sortKeys.includes(sortKey)) {
+      return;
+    }
+    if (sortKey === sortKeyPlaceholder) {
       return;
     }
 

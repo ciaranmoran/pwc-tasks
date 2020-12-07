@@ -128,7 +128,7 @@ const TaskListView: FC<Props> = ({
   return (
     <Grid>
       <Box display='flex' justifyContent='center' marginTop='50px'>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} sm={8} md={6} lg={4}>
           <Card elevation={3}>
             <CardActionArea>
               <CardContent>

@@ -20,7 +20,7 @@ describe('useTaskList', () => {
     expect(result.current.sortKeys).toEqual(['Sort by...', 'description', 'priority']);
     expect(result.current.selectedSortKey).toEqual('Sort by...');
     expect(result.current.sortDirection).toEqual('ascending');
-    expect(result.current.getCompletedTasks()).toEqual([]);
+    expect(result.current.completedTaskCount).toEqual(0);
   });
 
   it('should update the new task to be added', () => {
@@ -427,6 +427,43 @@ describe('useTaskList', () => {
     ]);
   });
 
+  it('should not alter the sort order given the placeholder sort key', () => {
+    const { result } = renderHook(() => useTaskList());
+
+    const sortKey = 'Sort by...';
+
+    // add some tasks in jumbled order
+    addNewTask(result, 'b');
+    addNewTask(result, 'a');
+    addNewTask(result, 'c');
+
+    // set the sort key
+    expect(result.current.selectedSortKey).toEqual('Sort by...');
+    const sortKeyChangeEvent = { target: { value: sortKey } };
+    act(() => result.current.handleTaskSort(sortKeyChangeEvent));
+    // expect no change to selected sort key
+    expect(result.current.selectedSortKey).toEqual('Sort by...');
+
+    // expect unaltered order
+    expect(result.current.tasks).toEqual([
+      {
+        description: 'b',
+        isComplete: false,
+        priority: 1,
+      },
+      {
+        description: 'a',
+        isComplete: false,
+        priority: 1,
+      },
+      {
+        description: 'c',
+        isComplete: false,
+        priority: 1,
+      },
+    ]);
+  });
+
   it('should return only the completed tasks', () => {
     const { result } = renderHook(() => useTaskList());
 
@@ -465,15 +502,9 @@ describe('useTaskList', () => {
       },
     ]);
 
-    const completedTasks = result.current.getCompletedTasks();
+    const completedTaskCount = result.current.completedTaskCount;
 
     // expect only b returned
-    expect(completedTasks).toEqual([
-      {
-        description: 'b',
-        isComplete: true,
-        priority: 1,
-      },
-    ]);
+    expect(completedTaskCount).toEqual(1);
   });
 });

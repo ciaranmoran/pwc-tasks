@@ -30,7 +30,8 @@ interface Props {
   handleTaskPrioritisation: HandleTaskPrioritisation;
   handleTaskSort: HandleTaskSort;
   handleSortDirectionToggle: HandleSortDirectionToggle;
-  getCompletedTasks: GetCompletedTasks;
+  completedTaskCount: CompletedTaskCount;
+  currentDate: CurrentDateDisplay;
 }
 
 interface TaskProps {
@@ -46,7 +47,7 @@ const renderPriorityIcon = (priority: number) => () => {
     '2': <RemoveIcon color='primary' />,
     '3': <ArrowUpwardIcon color='error' />,
   };
-  return <Box>{iconMap[priority.toString()]}</Box>;
+  return <Box paddingRight={2}>{iconMap[priority.toString()]}</Box>;
 };
 
 const Task: FC<TaskProps> = ({ task, handleTaskCompletion, handleTaskDeletion, handleTaskPrioritisation }) => (
@@ -70,8 +71,7 @@ const Task: FC<TaskProps> = ({ task, handleTaskCompletion, handleTaskDeletion, h
           native
           value={task.priority}
           onChange={handleTaskPrioritisation(task)}
-          IconComponent='circle'
-          renderSuffix={renderPriorityIcon(task.priority)}>
+          IconComponent={renderPriorityIcon(task.priority)}>
           <option value={1}>Low</option>
           <option value={2}>Medium</option>
           <option value={3}>High</option>
@@ -103,90 +103,84 @@ const TaskListView: FC<Props> = ({
   handleTaskPrioritisation,
   handleTaskSort,
   handleSortDirectionToggle,
-  getCompletedTasks,
+  completedTaskCount,
+  currentDate,
 }) => {
   const classes = useStyles();
+
   return (
-    <>
-      <Box display='flex' justifyContent='center' marginTop='50px'>
-        <Card className={classes.root} elevation={3}>
-          <CardActionArea>
-            <CardContent>
-              <Box display='flex' flexDirection='column' alignItems='center'>
-                <Typography gutterBottom variant='h5' component='h2'>
-                  Monday
-                </Typography>
-                <Typography variant='body2' color='textSecondary' component='p'>
-                  Dec 7, 2020
-                </Typography>
-              </Box>
-            </CardContent>
-          </CardActionArea>
+    <Box display='flex' justifyContent='center' marginTop='50px'>
+      <Card className={classes.root} elevation={3}>
+        <CardActionArea>
           <CardContent>
-            <Box display='flex'>
+            <Box display='flex' flexDirection='column' alignItems='center'>
+              <Typography gutterBottom variant='h5' component='h2'>
+                {currentDate.day}
+              </Typography>
+              <Typography variant='body2' color='textSecondary' component='p'>
+                {`${currentDate.month} ${currentDate.date}, ${currentDate.year}`}
+              </Typography>
+            </Box>
+          </CardContent>
+        </CardActionArea>
+        <CardContent>
+          <Box display='flex'>
+            <Box>
+              <Typography variant='caption' color='secondary'>
+                {tasks.length} {`task${tasks.length !== 1 ? 's' : ''}`}
+              </Typography>
+            </Box>
+            <Box marginLeft={1}>
+              <Typography variant='caption' color='secondary'>
+                {completedTaskCount} completed
+              </Typography>
+            </Box>
+            <Box display='flex' alignItems='center' marginLeft='auto'>
               <Box>
-                <Typography variant='caption' color='secondary'>
-                  {tasks.length} {`task${tasks.length !== 1 ? 's' : ''}`}
-                </Typography>
+                <Select native value={selectedSortKey} onChange={handleTaskSort}>
+                  {sortKeys.map((sortKey) => (
+                    <option key={sortKey} value={sortKey}>
+                      {sortKey}
+                    </option>
+                  ))}
+                </Select>
               </Box>
-              <Box marginLeft={1}>
-                <Typography variant='caption' color='secondary'>
-                  {getCompletedTasks().length} completed
-                </Typography>
-              </Box>
-              <Box display='flex' alignItems='center' marginLeft='auto'>
-                <Box>
-                  <Select native value={selectedSortKey} onChange={handleTaskSort}>
-                    {sortKeys.map((sortKey) => (
-                      <option key={sortKey} value={sortKey}>
-                        {sortKey}
-                      </option>
-                    ))}
-                  </Select>
-                </Box>
-                <Box>
-                  <IconButton onClick={handleSortDirectionToggle(sortDirection)}>
-                    <SortIcon className={`${sortDirection === 'ascending' ? classes.upsideDown : ''}`} />
-                  </IconButton>
-                </Box>
+              <Box>
+                <IconButton onClick={handleSortDirectionToggle(sortDirection)}>
+                  <SortIcon className={`${sortDirection === 'ascending' ? classes.upsideDown : ''}`} />
+                </IconButton>
               </Box>
             </Box>
-            <form onSubmit={handleTaskAddition}>
-              <Input
-                placeholder='Add a task...'
-                onChange={handleTaskInput}
-                value={newTask}
-                fullWidth
-                startAdornment={
-                  <InputAdornment position='start'>
-                    <FormatListBulletedIcon />
-                  </InputAdornment>
-                }
-              />
-            </form>
-          </CardContent>
-          <CardContent>
-            {tasks.map((task) => (
-              <Task
-                key={task.description}
-                {...{
-                  task,
-                  handleTaskCompletion,
-                  handleTaskDeletion,
-                  handleTaskPrioritisation,
-                }}
-              />
-            ))}
-          </CardContent>
-        </Card>
-      </Box>
-
-      <div className='container' style={{ display: 'none' }}>
-        <div className='card elevated'>
-          <div className='card-body'></div>
-        </div>
-      </div>
-    </>
+          </Box>
+          <form onSubmit={handleTaskAddition}>
+            <Input
+              placeholder='Add a task...'
+              onChange={handleTaskInput}
+              value={newTask}
+              fullWidth
+              startAdornment={
+                <InputAdornment position='start'>
+                  <FormatListBulletedIcon />
+                </InputAdornment>
+              }
+            />
+          </form>
+        </CardContent>
+        <CardContent>
+          {tasks.map((task) => (
+            <Task
+              key={task.description}
+              {...{
+                task,
+                handleTaskCompletion,
+                handleTaskDeletion,
+                handleTaskPrioritisation,
+              }}
+            />
+          ))}
+        </CardContent>
+      </Card>
+    </Box>
   );
 };
 

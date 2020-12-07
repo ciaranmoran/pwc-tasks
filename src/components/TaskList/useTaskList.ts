@@ -127,7 +127,22 @@ const useTaskList = () => {
     setTasks(sortedTasks);
   };
 
-  const getCompletedTasks = () => tasks.filter(({ isComplete }) => isComplete);
+  const completedTaskCount = tasks.filter(({ isComplete }) => isComplete).length;
+
+  const getCurrentDateDisplay = (): CurrentDateDisplay => {
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
+    const date = new Date();
+
+    return {
+      day: days[date.getDay()],
+      month: months[date.getMonth()],
+      date: date.getDate(),
+      year: date.getFullYear(),
+    };
+  };
+
+  const currentDate = getCurrentDateDisplay();
 
   return {
     tasks,
@@ -142,7 +157,8 @@ const useTaskList = () => {
     handleTaskPrioritisation,
     handleTaskSort,
     handleSortDirectionToggle,
-    getCompletedTasks,
+    completedTaskCount,
+    currentDate,
   };
 };
 

@@ -1,13 +1,3 @@
-interface Task {
-  description: string;
-  isComplete: boolean;
-  priority: Priority;
-}
-
-interface PriorityIconMap {
-  [key: string]: any;
-}
-
 type Priority = 1 | 2 | 3;
 type SortKey = 'Sort by...' | 'description' | 'priority';
 type SortDirection = '' | 'ascending' | 'descending';
@@ -20,6 +10,22 @@ type HandleTaskPrioritisation = (task: Task) => (event: ChangeEvent<HTMLSelectEl
 type HandleTaskSort = (event: ChangeEvent<HTMLSelectElement>) => void;
 type HandleSortDirectionToggle = (direction: SortDirection) => (event: ChangeEvent<HTMLSelectElement>) => void;
 
-type GetCompletedTasks = () => Task[];
-
 type SortByKey = (arr: any[], key: string, direction: SortDirection) => any[];
+type CompletedTaskCount = number;
+
+interface Task {
+  description: string;
+  isComplete: boolean;
+  priority: Priority;
+}
+
+interface CurrentDateDisplay {
+  day: string;
+  month: string;
+  date: number;
+  year: number;
+}
+
+interface PriorityIconMap {
+  [key: string]: any;
+}

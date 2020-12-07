@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, Theme } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import Card from '@material-ui/core/Card';
@@ -42,13 +42,38 @@ interface TaskProps {
   handleTaskPrioritisation: HandleTaskPrioritisation;
 }
 
-const renderPriorityIcon = (priority: number) => () => {
+const useStyles = makeStyles((theme: Theme) => ({
+  root: {
+    minWidth: 500,
+  },
+  upsideDown: {
+    transform: 'rotate(180deg)',
+  },
+  priorityLow: {
+    color: theme.palette.secondary.main,
+  },
+  priorityMedium: {
+    color: theme.palette.primary.main,
+  },
+  priorityHigh: {
+    color: theme.palette.error.main,
+  },
+}));
+
+// material's Select prop: "IconComponent" adds its own className and not the caller's under the hood;
+// this makes the passed icon sit outside the clickable area if the caller wants to apply custom styles.. pretty annoying
+// We can set both classes by applying Material's classname plus our own in the second set of args in this
+// curried function (that returns a function component)
+const renderPriorityIcon = (priority: number) => ({ className, ...rest }: any) => {
+  const classes = useStyles();
+
   const iconMap: PriorityIconMap = {
-    '1': <ArrowDownwardIcon color='secondary' />,
-    '2': <RemoveIcon color='primary' />,
-    '3': <ArrowUpwardIcon color='error' />,
+    1: <ArrowDownwardIcon className={`${className} ${classes.priorityLow}`} {...rest} />,
+    2: <RemoveIcon className={`${className} ${classes.priorityMedium}`} {...rest} />,
+    3: <ArrowUpwardIcon className={`${className} ${classes.priorityHigh}`} {...rest} />,
   };
-  return <Box paddingRight={2}>{iconMap[priority.toString()]}</Box>;
+
+  return iconMap[priority];
 };
 
 const Task: FC<TaskProps> = ({ task, handleTaskCompletion, handleTaskDeletion, handleTaskPrioritisation }) => (
@@ -81,15 +106,6 @@ const Task: FC<TaskProps> = ({ task, handleTaskCompletion, handleTaskDeletion, h
     </Box>
   </Box>
 );
-
-const useStyles = makeStyles({
-  root: {
-    minWidth: 500,
-  },
-  upsideDown: {
-    transform: 'rotate(180deg)',
-  },
-});
 
 const TaskListView: FC<Props> = ({
   tasks,

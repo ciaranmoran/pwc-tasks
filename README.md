@@ -9,6 +9,8 @@ Task List application, with the following functionality:
 - View the tasks sorted by priority and name
 - View the number of total and completed tasks
 
+![Screenshot](https://github.com/ciaranmoran/pwc-tasks/blob/main/src/images/preview.png?raw=true)
+
 ## Getting started
 
 From the root directory, run:\

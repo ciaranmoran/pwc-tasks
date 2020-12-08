@@ -58,6 +58,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   priorityHigh: {
     color: theme.palette.error.main,
   },
+  taskDescriptionComplete: {
+    textDecoration: 'line-through',
+  },
 }));
 
 // material's Select prop: "IconComponent" adds its own className and not the caller's under the hood;
@@ -76,36 +79,40 @@ const renderPriorityIcon = (priority: number) => ({ className, ...rest }: any) =
   return iconMap[priority];
 };
 
-const Task: FC<TaskProps> = ({ task, handleTaskCompletion, handleTaskDeletion, handleTaskPrioritisation }) => (
-  <Box display='flex' flexDirection='row' alignItems='center' padding={0.5}>
-    <Box>
-      <Checkbox checked={task.isComplete} onChange={handleTaskCompletion(task)} />
-    </Box>
-    <Box>
-      <Typography variant='h5' style={{ textDecoration: task.isComplete ? 'line-through' : 'none' }}>
-        {task.description}
-      </Typography>
-    </Box>
-    <Box display='flex' alignItems='center' marginLeft='auto'>
+const Task: FC<TaskProps> = ({ task, handleTaskCompletion, handleTaskDeletion, handleTaskPrioritisation }) => {
+  const classes = useStyles();
+
+  return (
+    <Box display='flex' flexDirection='row' alignItems='center' padding={0.5}>
       <Box>
-        <IconButton aria-label='delete' onClick={handleTaskDeletion(task)}>
-          <DeleteForeverIcon fontSize='small' />
-        </IconButton>
+        <Checkbox checked={task.isComplete} onChange={handleTaskCompletion(task)} />
       </Box>
       <Box>
-        <Select
-          native
-          value={task.priority}
-          onChange={handleTaskPrioritisation(task)}
-          IconComponent={renderPriorityIcon(task.priority)}>
-          <option value={1}>Low</option>
-          <option value={2}>Medium</option>
-          <option value={3}>High</option>
-        </Select>
+        <Typography variant='h5' className={task.isComplete ? classes.taskDescriptionComplete : ''}>
+          {task.description}
+        </Typography>
+      </Box>
+      <Box display='flex' alignItems='center' marginLeft='auto'>
+        <Box>
+          <IconButton aria-label='delete' onClick={handleTaskDeletion(task)}>
+            <DeleteForeverIcon fontSize='small' />
+          </IconButton>
+        </Box>
+        <Box>
+          <Select
+            native
+            value={task.priority}
+            onChange={handleTaskPrioritisation(task)}
+            IconComponent={renderPriorityIcon(task.priority)}>
+            <option value={1}>Low</option>
+            <option value={2}>Medium</option>
+            <option value={3}>High</option>
+          </Select>
+        </Box>
       </Box>
     </Box>
-  </Box>
-);
+  );
+};
 
 const TaskListView: FC<Props> = ({
   tasks,
